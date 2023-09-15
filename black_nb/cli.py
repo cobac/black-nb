@@ -193,7 +193,7 @@ def cli(
     ctx.obj["root"] = root
 
     sources = black.get_sources(
-        ctx=ctx,
+        root=root,
         src=src,
         quiet=quiet,
         verbose=verbose,
@@ -241,13 +241,13 @@ def reformat_one(
 ) -> None:
     """Reformat a single file under `src`."""
     try:
-
         sub_report = SubReport(write_back=write_back)
         changed = black.Changed.NO
 
         cache: black.Cache = {}
+        # TODO: cache is broken, nvm
         if write_back is not black.WriteBack.DIFF:
-            cache = black.read_cache(mode)
+            cache = black.cache.Cache.read(mode).file_data
             res_src = src.resolve()
             if res_src in cache and cache[res_src] == black.get_cache_info(
                 res_src
